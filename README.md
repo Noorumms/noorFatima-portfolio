@@ -1,2 +1,12 @@
-# noorFatima-portfolio
-Personal Software Engineering Portfolio showcasing projects, technical skills, achievements, and internship experience.
+# Noor Fatima Portfolio
+
+Personal portfolio website showcasing:
+
+- Software Engineering projects
+- AI/ML projects
+- Technical skills
+- Achievements
+- Resume
+- Contact information
+
+Live Website:
