@@ -49,12 +49,12 @@ export default function Sidebar() {
           <Mail size={20} />
         </a>
         <a
-          href="/resume.pdf"
-          download
+          href="/Noor_Fatima_Resume.pdf"
+          download="Noor_Fatima_Resume.pdf"
           className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors duration-200 hover:border-purple hover:text-purple"
         >
           <Download size={14} aria-hidden="true" />
-          Resume
+          Download Resume
         </a>
         <ThemeToggle />
       </div>

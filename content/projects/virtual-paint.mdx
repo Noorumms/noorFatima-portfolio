@@ -1,0 +1,43 @@
+## What It Does
+
+Virtual Paint lets you draw on screen using any colored object in front of your webcam. Hold up something orange, purple, or green and the app tracks it in real time, translating your hand movements into painted strokes on a canvas. No mouse, no touchscreen, no stylus. Just a webcam and a colored object.
+
+You can switch between three brush sizes, toggle an eraser, clear the canvas, and save your drawing as a PNG, all while the app runs live at full frame rate.
+
+## How It Works
+
+The webcam feeds frames into OpenCV continuously. Each frame goes through a conversion from BGR (how OpenCV stores images by default) to HSV color space, because isolating a specific color is much more reliable in HSV. More on that in a second.
+
+Once the frame is in HSV, the app checks every pixel against the color ranges defined for orange, purple, and green. This uses OpenCV's `inRange` function which produces a binary mask: white where the color matches, black everywhere else.
+
+From that mask, OpenCV extracts contours, which are just the outlines of the colored regions. The largest contour is taken as the brush tip. Its centroid gives an x and y coordinate on the frame.
+
+That coordinate gets appended to a list of points, each stored with the current color and brush size. Every frame, the app loops through all saved points and draws them as circles on the canvas. Because this happens 30 or more times per second and the circles are positioned close together, they visually merge into a smooth, continuous stroke.
+
+The canvas persists across frames independently of the live video feed, so your drawing stays exactly where you left it even as the camera keeps running.
+
+## Why HSV Instead of BGR
+
+BGR stores color as three values that all change together when lighting changes. If you have an orange object and the light in the room dims slightly, all three values shift, which makes it hard to write a reliable rule for "this pixel is orange."
+
+HSV separates the information. Hue is the actual color, Saturation is how vivid or washed out it is, and Value is brightness. When the lighting changes, Hue stays stable. You only need to account for a narrower range of Saturation and Value variation, and the color detection stays consistent whether you're in a bright room or a dim one. That is the main reason almost every computer vision color detection task uses HSV rather than working directly in BGR.
+
+## Keyboard Controls
+
+| Key | Action |
+|-----|--------|
+| Z | Small brush |
+| X | Medium brush |
+| V | Large brush |
+| E | Toggle eraser |
+| C | Clear canvas |
+| S | Save canvas as PNG |
+| Q | Quit |
+
+## What I Learned
+
+Getting the HSV ranges right took iteration. Orange in particular overlaps with red and yellow depending on lighting, so the ranges needed to be tight enough to exclude those but wide enough to work across different lighting conditions and object shades.
+
+The contour detection step was also interesting to tune. Setting a minimum area threshold for contours filters out noise in the mask without accidentally ignoring the actual brush tip when it moves quickly.
+
+The point list approach for drawing is simple but effective. Each point knows its color and size, so switching tools mid-drawing works correctly because every point is rendered with the settings it was captured with, not the current settings.
